@@ -21,10 +21,25 @@ export const  regsiter = async(req,res)=>{
         email:email,
         password:hashedPassword,
       }).save();  
-      return res.status(201).json({message:"User created successfully"});
+      
+      const token = jwt.sign(
+        {userId:newUser._id},
+        process.env.JWT_SECRET,
+        {expiresIn:'7d'}
+      ); 
+
+      res.cookie("token",token,{
+        httpOnly:true,
+        secure:process.env.NODE_ENV === 'production',
+        sameSite:process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        maxAge:7*24*60*60*1000, // 7 days
+      });
+    //  return res.status(201).json({message:"User created successfully"});
+ 
  }
     catch(error){
         return res.status(500).json({message:"Server Error"});
     }
 
 }
+
