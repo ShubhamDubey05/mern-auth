@@ -24,11 +24,24 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
       select: false, // by default password fetch nahi hoga
     },
+    verifyotp:{
+        type:String,
+        default:'',
+    },
 
-    role: {
-      type: String,
-      enum: ["user", "admin"],
-      default: "user",
+    verifyotpExpiryAt:{
+        type:Number,
+        default:0,
+    },
+
+    resetotp:{
+      type:String,
+      default:'',
+    },
+
+    resetotpExpiryAt:{
+      type:Number,
+      default:0,
     },
 
     isVerified: {
@@ -39,7 +52,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const User = mongoose.model('User', userSchema);
+const User =  mongoose.models.user||mongoose.model('User', userSchema);
 
 export default User;
 
