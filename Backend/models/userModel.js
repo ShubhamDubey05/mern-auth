@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       minlength: 6,
-      select: false, // by default password fetch nahi hoga
+       select: false, // by default password fetch nahi hoga
     },
     verifyotp:{
         type:String,
@@ -52,7 +52,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const User =  mongoose.models.user||mongoose.model('User', userSchema);
+const User =  mongoose.models.user||mongoose.model('user', userSchema);
 
 export default User;
 
