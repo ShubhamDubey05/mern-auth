@@ -23,6 +23,10 @@ app.use(cookieParser());
 
 // Routes
 
+app.get("/", (req, res) => {
+  res.send("API is running");
+});
+
 app.use("/api/auth", authRouter);  // auth routes
 app.use("/api/user", userRouter);  // user routes
 
