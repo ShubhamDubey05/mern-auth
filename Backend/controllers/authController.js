@@ -5,6 +5,8 @@ import transporter from "../config/nodemailer.js";
 import {
   EMAIL_VERIFY_TEMPLATE,
   PASSWORD_RESET_TEMPLATE,
+  WELCOME_TEMPLATE,
+  PASSWORD_CHANGED_TEMPLATE,
 } from "../config/emailTemplates.js";
 
 export const register = async (req, res) => {
@@ -48,11 +50,18 @@ export const register = async (req, res) => {
     const info = {
       from: process.env.EMAIL_SENDER,
       to: email,
-      subject: "Welcome to Shubham's website",
-      text: `Welcome to Shubham's website. Congratulations! Your account has been created with email id: ${email}`,
+      subject: "Welcome to Shubham's Website 🎉",
+      html: WELCOME_TEMPLATE.replace("{{name}}", name).replace(
+        "{{email}}",
+        email,
+      ),
     };
 
-    await transporter.sendMail(info);
+    try {
+      await transporter.sendMail(info);
+    } catch (error) {
+      console.log("Email error:", error.message);
+    }
 
     return res.status(201).json({
       success: true,
@@ -164,8 +173,11 @@ export const verifyOtp = async (req, res) => {
         otp,
       ),
     };
-
-    await transporter.sendMail(info);
+    try {
+      await transporter.sendMail(info);
+    } catch (error) {
+      console.log(error.message);
+    }
 
     return res.json({
       success: true,
@@ -284,8 +296,11 @@ export const resetOtp = async (req, res) => {
         otp,
       ),
     };
-
-    await transporter.sendMail(info);
+    try {
+      await transporter.sendMail(info);
+    } catch (error) {
+      console.log(error.message);
+    }
 
     return res.json({
       success: true,
@@ -342,6 +357,20 @@ export const resetPassword = async (req, res) => {
     user.resetotpExpiryAt = 0;
 
     await user.save();
+
+    const html = PASSWORD_CHANGED_TEMPLATE.replace("{{email}}", user.email);
+
+     try {
+      await transporter.sendMail({
+      from: process.env.EMAIL_SENDER,
+      to: user.email,
+      subject: "Your Password Has Been Changed ✅",
+      html: html,
+    });
+     } catch (error) {
+       console.log(error.message);
+       
+     }
 
     return res.json({
       success: true,
