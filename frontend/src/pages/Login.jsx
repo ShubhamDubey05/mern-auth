@@ -2,12 +2,13 @@ import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import AppContent from "../context/AppContent";
-import axios from "axios";
+import { useAuth } from "../hooks/useAuth";
+
 import { toast } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { backendUrl, setIsLoggedIn,getUserData } = useContext(AppContent);
+  const {handleRegiter, handleLogin}=  useAuth();
 
   const [state, setState] = useState("Sign up");
   const [name, setName] = useState("");
@@ -15,47 +16,30 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const onSubmitHandler = async (e) => {
-    e.preventDefault();
-
-    try {
-      axios.defaults.withCredentials = true;
-
-      if (state === "Sign up") {
-        const response = await axios.post(
-          backendUrl + "/api/auth/register",
-          { name, email, password }
-        );
-
-        if (response.data.success) {
-          setIsLoggedIn(true);
-         await getUserData()
-          toast.success("Account created successfully");
-          navigate("/");
-        } else {
-          toast.error(response.data.message);
-        }
-
+  e.preventDefault();
+  try {
+    if (state === "Sign up") {
+      const response = await handleRegiter(email, name, password);
+      if (response?.success) {           // ← check backend response
+        toast.success("Account created successfully");
+        navigate("/");
       } else {
-
-        const response = await axios.post(
-          backendUrl + "/api/auth/login",
-          { email, password }
-        );
-
-        if (response.data.success) {
-          setIsLoggedIn(true);
-         await getUserData();
-          toast.success("Login successful");
-          navigate("/");
-        } else {
-          toast.error(response.data.message);
-        }
+        toast.error(response?.message || "Registration failed");
       }
-
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong");
+    } else {
+      const response = await handleLogin(email, password);
+      if (response?.success) {           // ← check backend response
+        toast.success("Login successfully");
+        navigate("/");
+      } else {
+        toast.error(response?.message || "Login failed");
+      }
     }
-  };
+  } catch (error) {
+    toast.error(error.response?.data?.message || error.message);
+    //          ↑ axios puts server error body here
+  }
+};
 
   return (
     <div className="flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-purple-400">
