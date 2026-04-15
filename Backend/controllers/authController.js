@@ -41,11 +41,11 @@ export const register = async (req, res) => {
     });
 
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+  httpOnly: true,
+  secure: true,        // MUST in production
+  sameSite: "none",    // IMPORTANT (cross-site cookie)
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});
 
     const info = {
       from: process.env.EMAIL_SENDER,
@@ -128,10 +128,10 @@ export const login = async (req, res) => {
 export const logout = (req, res) => {
   try {
     res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-    });
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+});
 
     return res.json({
       success: true,
