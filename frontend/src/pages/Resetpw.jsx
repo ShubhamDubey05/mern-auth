@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import AppContent from "../context/AppContent.js";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { newPassword, reset } from "../services/authApi.js";
 
 const Resetpw = () => {
 
@@ -50,10 +51,7 @@ const Resetpw = () => {
     e.preventDefault();
 
     try {
-      const { data } = await axios.post(
-        backendUrl + "/api/auth/reset",
-        { email }
-      );
+      const  data  = await reset(email);
 
       if (data.success) {
         toast.success(data.message);
@@ -88,14 +86,7 @@ const Resetpw = () => {
 
     try {
 
-      const { data } = await axios.post(
-        backendUrl + "/api/auth/newpassword",
-        {
-          email,
-          otp,
-          newPassword: password,
-        }
-      );
+      const data = await newPassword(otp, password, email);
 
       if (data.success) {
         toast.success(data.message);

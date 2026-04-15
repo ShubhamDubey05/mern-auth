@@ -35,10 +35,13 @@ export const verifyEmail = async(otp)=>{
   return response.data;
 }
 
-export const check  = async ()=>{
-  const response = await axios.post("http://localhost:4000/api/auth/authenticate", {}, {withCredentials:true})
-return response.data;
-}
+export const check = async () => {
+  const response = await axios.get(
+    "http://localhost:4000/api/auth/authenticate",
+    { withCredentials: true }
+  );
+  return response.data;
+};
 
 export const reset  = async (email)=>{
   const response  = await axios.post ("http://localhost:4000/api/auth/reset", {email},{withCredentials:true} )
@@ -48,6 +51,12 @@ export const reset  = async (email)=>{
 
 export const newPassword  = async (otp, newPassword, email)=>{
   const response  = await axios.post ("http://localhost:4000/api/auth/newpassword", {email, otp, newPassword},{withCredentials:true} )
+    return response.data;
+}
+
+
+export const users  = async()=>{
+     const response  = await axios.get("http://localhost:4000/api/user/data", {},{withCredentials:true} )
     return response.data;
 }
 

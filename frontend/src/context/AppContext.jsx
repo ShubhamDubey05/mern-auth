@@ -2,6 +2,7 @@ import axios from "axios";
 import AppContent from "./AppContent";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { check , users} from "../services/authApi";
 
 export const AppContext = (props) => {
 
@@ -13,7 +14,7 @@ export const AppContext = (props) => {
 
    const getAuthState = async ()=>{
         try {
-          const {data} = await axios.get(backendUrl+'/api/auth/authenticate');
+          const {data} = await check();
           if(data.success){
             setIsLoggedIn(true);
             getUserData();
@@ -27,7 +28,7 @@ export const AppContext = (props) => {
   const getUserData = async () => {
     try {
 
-      const { data } = await axios.get(backendUrl + '/api/user/data');
+      const { data } = await users() ;
 
       data.success ? setUserData(data.userdata) : toast.error(data.message);
 
