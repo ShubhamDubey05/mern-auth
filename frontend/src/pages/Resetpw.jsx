@@ -81,24 +81,21 @@ const Resetpw = () => {
   // ================= NEW PASSWORD =================
 
   const newPasswordHandler = async (e) => {
+  e.preventDefault();
 
-    e.preventDefault();
+  try {
+    const data = await newPassword(email, otp, password);
 
-    try {
-
-      const data = await newPassword(otp, password, email);
-
-      if (data.success) {
-        toast.success(data.message);
-        navigate("/login");
-      } else {
-        toast.error(data.message);
-      }
-
-    } catch (error) {
-      toast.error(error.message);
+    if (data.success) {
+      toast.success(data.message);
+      navigate("/login");
+    } else {
+      toast.error(data.message);
     }
-  };
+  } catch (error) {
+    toast.error(error.message);
+  }
+};
 
   return (
 

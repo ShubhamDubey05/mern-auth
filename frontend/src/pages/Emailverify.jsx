@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 
 import { assets } from "../assets/assets";
 import  AppContent  from "../context/AppContent.js";
-import axios from "axios";
+import { verifyEmail } from "../services/authApi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -39,27 +39,23 @@ const Emailverify = () => {
   };
 
   const submithandler = async (e) => {
-    try {
-      e.preventDefault();
-      const otp = inputRefs.current.map((e) => e.value).join("");
+  e.preventDefault();
 
-      console.log(otp);
-      const { data } = await axios.post(
-        backendUrl + "/api/auth/verify-account",
-        { otp },
-      );
+  const otp = inputRefs.current.map((e) => e.value).join("");
 
-      if (data.success) {
-        toast.success(data.message);
-        getUserData();
-        navigate("/");
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.message);
+  try {
+    const data = await verifyEmail(otp);
+
+    if (data.success) {
+      toast.success(data.message);
+      navigate("/");
+    } else {
+      toast.error(data.message);
     }
-  };
+  } catch (error) {
+    toast.error(error.message);
+  }
+};
 
   useEffect(() => {
     isLoggedIn && userData && userData.isVerified && navigate("/");

@@ -1,45 +1,56 @@
-import axios from "axios";
-import AppContent from "./AppContent";
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { check , users} from "../services/authApi";
+import { check, users } from "../services/authApi";
+
+const AppContent = createContext();
 
 export const AppContext = (props) => {
-
-    
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userData, setUserData] = useState(false);   
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-   const getAuthState = async ()=>{
-        try {
-          const {data} = await check();
-          if(data.success){
-            setIsLoggedIn(true);
-            getUserData();
-          }
-          
-        } catch (error) {
-            toast.error(error.message);
-        }
-   }
+  // ================= AUTH CHECK =================
+  const getAuthState = async () => {
+    try {
+      const data = await check();
 
+      if (data.success) {
+        setIsLoggedIn(true);
+        await getUserData();
+      } else {
+        setIsLoggedIn(false);
+        setUserData(null);
+      }
+    } catch (error) {
+      setIsLoggedIn(false);
+      setUserData(null);
+      console.log(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ================= USER DATA =================
   const getUserData = async () => {
     try {
+      const data = await users();
 
-      const { data } = await users() ;
-
-      data.success ? setUserData(data.userdata) : toast.error(data.message);
-
+      if (data.success) {
+        setUserData(data.userdata);
+      } else {
+        toast.error(data.message || "Failed to fetch user");
+      }
     } catch (error) {
       toast.error(error.message);
     }
-  }
+  };
 
-  useEffect(()=>{
-       getAuthState();
-  },[])
+  // ================= INIT =================
+  useEffect(() => {
+    getAuthState();
+  }, []);
 
   const value = {
     backendUrl,
@@ -48,6 +59,7 @@ export const AppContext = (props) => {
     userData,
     setUserData,
     getUserData,
+    loading,
   };
 
   return (
@@ -56,3 +68,5 @@ export const AppContext = (props) => {
     </AppContent.Provider>
   );
 };
+
+export default AppContent;

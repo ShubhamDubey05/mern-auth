@@ -8,47 +8,39 @@ import userRouter from "./routes/userRoute.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
 const allowedOrigins = [
   process.env.CLIENT_URL,
-  "http://localhost:5173"
-];
+  "http://localhost:5173",
+].filter(Boolean);
 
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(new Error("CORS blocked"));
     }
   },
   credentials: true,
-}));
+};
 
-app.options("*", cors({
-  origin: allowedOrigins,
-  credentials: true,
-}));
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
 
+app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
 
-// Routes
-app.use("/api/auth", authRouter);  // auth routes
-app.use("/api/user", userRouter);  // user routes
-
-// Start server AFTER DB connection
 const startServer = async () => {
   try {
     await connectDB();
-
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error("Server failed to start:", error.message);
+    app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+  } catch (err) {
+    console.log(err.message);
   }
 };
-
 
 startServer();
