@@ -1,62 +1,59 @@
-import axios from "axios";
+import API from "./api";
 
+// REGISTER
 export const register = async (email, name, password) => {
-  const response = await axios.post(
-    "http://localhost:4000/api/auth/register",
-    { email, name, password },
-    { withCredentials: true }
-  );
-  return response.data;
+  const res = await API.post("/api/auth/register", { email, name, password });
+  return res.data;
 };
 
+// LOGIN
 export const login = async (email, password) => {
-  const response = await axios.post(
-    "http://localhost:4000/api/auth/login",
-    { email, password },
-    { withCredentials: true }
-  );
-  return response.data;
+  const res = await API.post("/api/auth/login", { email, password });
+  return res.data;
 };
 
-export  const logout = async ()=>{
-  const response  = await axios.post("http://localhost:4000/api/auth/logout", {}, {withCredentials:true});
+// LOGOUT
+export const logout = async () => {
+  const res = await API.post("/api/auth/logout");
+  return res.data;
+};
 
-  return response.data;
-}
+// SEND OTP
+export const sendOtp = async () => {
+  const res = await API.post("/api/auth/send-otp");
+  return res.data;
+};
 
+// VERIFY EMAIL
+export const verifyEmail = async (otp) => {
+  const res = await API.post("/api/auth/verify-account", { otp });
+  return res.data;
+};
 
-export const sendOtp = async ()=>{
-  const response  = await axios.post("http://localhost:4000/api/auth/send-otp", {}, {withCredentials:true})
-   return response.data;
-}
-
-export const verifyEmail = async(otp)=>{
-  const response = await axios.post("http://localhost:4000/api/auth/verify-account", {otp}, {withCredentials:true});
-  return response.data;
-}
-
+// CHECK AUTH
 export const check = async () => {
-  const response = await axios.get(
-    "http://localhost:4000/api/auth/authenticate",
-    { withCredentials: true }
-  );
-  return response.data;
+  const res = await API.get("/api/auth/authenticate");
+  return res.data;
 };
 
-export const reset  = async (email)=>{
-  const response  = await axios.post ("http://localhost:4000/api/auth/reset", {email},{withCredentials:true} )
-    return response.data;
-}
+// RESET PASSWORD OTP
+export const reset = async (email) => {
+  const res = await API.post("/api/auth/reset", { email });
+  return res.data;
+};
 
+// NEW PASSWORD
+export const newPassword = async (otp, newPassword, email) => {
+  const res = await API.post("/api/auth/newpassword", {
+    email,
+    otp,
+    newPassword,
+  });
+  return res.data;
+};
 
-export const newPassword  = async (otp, newPassword, email)=>{
-  const response  = await axios.post ("http://localhost:4000/api/auth/newpassword", {email, otp, newPassword},{withCredentials:true} )
-    return response.data;
-}
-
-
-export const users  = async()=>{
-     const response  = await axios.get("http://localhost:4000/api/user/data", {},{withCredentials:true} )
-    return response.data;
-}
-
+// USER DATA
+export const users = async () => {
+  const res = await API.get("/api/user/data");
+  return res.data;
+};
